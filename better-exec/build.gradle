@@ -1,0 +1,24 @@
+apply plugin: 'com.palantir.gradle-plugin-testing'
+apply plugin: 'java-gradle-plugin'
+apply plugin: 'com.palantir.external-publish-jar'
+apply plugin: 'groovy'
+
+dependencies {
+    compileOnly gradleApi()
+
+    implementation 'com.palantir.gradle.failure-reports:gradle-failure-reports-exceptions'
+    implementation 'com.palantir.gradle.utils:platform'
+
+    testImplementation gradleApi()
+    testImplementation 'com.netflix.nebula:nebula-test'
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+gradlePlugin {
+    // do not add new task to publish to plugins.gradle.org
+    automatedPublishing = false
+}
+
+gradleTestUtils {
+    gradleVersions = ['7.6.4', '8.8', '8.12.1']
+}
