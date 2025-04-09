@@ -1,0 +1,5 @@
+type: fix
+fix:
+  description: Use CIRCLE_BUILD_URL to get the circle url
+  links:
+  - https://github.com/palantir/better-exec/pull/1
