@@ -16,18 +16,17 @@
 package com.palantir.gradle.betterexec;
 
 import groovy.lang.Closure;
-import org.gradle.api.DefaultTask;
-import org.gradle.api.tasks.TaskAction;
-import org.gradle.workers.WorkQueue;
-import org.gradle.workers.WorkerExecutor;
-
-import javax.inject.Inject;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import javax.inject.Inject;
+import org.gradle.api.DefaultTask;
+import org.gradle.api.tasks.TaskAction;
+import org.gradle.workers.WorkQueue;
+import org.gradle.workers.WorkerExecutor;
 
 public abstract class BetterExec extends DefaultTask implements BetterExecCommon {
 
