@@ -16,17 +16,21 @@
 package com.palantir.gradle.betterexec;
 
 import groovy.lang.Closure;
-import java.io.File;
-import java.util.Optional;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-import javax.inject.Inject;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.workers.WorkQueue;
 import org.gradle.workers.WorkerExecutor;
 
+import javax.inject.Inject;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Optional;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
 public abstract class BetterExec extends DefaultTask implements BetterExecCommon {
+
     private final SerializableOrSpec<String> retryWhen = SerializableOrSpec.empty();
 
     @Inject
@@ -118,9 +122,23 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
         String circleHome = EnvironmentVariables.envVarOrFromTestingProperty(getProject(), "CIRCLE_HOME_DIRECTORY")
                 .orElse("/home/circleci/");
 
-        return "See output at: https://circle.palantir.build/output/job/" + circleWorkflowJobId.get()
-                + "/artifacts/"
-                + circleNodeIndex.get()
-                + getCircleLogFilePath().getAsFile().get().toString().replace(circleHome, "/~/");
+        String circleUrl = EnvironmentVariables.envVarOrFromTestingProperty(getProject(), "CIRCLE_BUILD_URL")
+                .map(BetterExec::extractDomain)
+                .orElse("<circle_url>");
+        return String.format(
+                "See output at: https://%s/output/job/%s/artifacts/%s",
+                circleUrl,
+                circleWorkflowJobId.get(),
+                circleNodeIndex.get()
+                        + getCircleLogFilePath().getAsFile().get().toString().replace(circleHome, "/~/"));
+    }
+
+    public static String extractDomain(String url) {
+        try {
+            URL urlObj = new URL(url);
+            return urlObj.getProtocol() + "://" + urlObj.getHost();
+        } catch (MalformedURLException e) {
+            return "Invalid URL";
+        }
     }
 }

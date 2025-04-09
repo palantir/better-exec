@@ -38,6 +38,7 @@ class BetterExecIntegTest extends IntegrationSpec {
             __TESTING_CIRCLE_HOME_DIRECTORY=${projectDir}/
             __TESTING_CIRCLE_WORKFLOW_JOB_ID=de700126-0f58-4624-aed3-1cdd297ed785
             __TESTING_CIRCLE_NODE_INDEX=2
+            __TESTING_CIRCLE_BUILD_URL=https://mycircle.url/gh/palantir/better-exec/1581
         """.stripIndent(true)
     }
 
@@ -146,7 +147,7 @@ class BetterExecIntegTest extends IntegrationSpec {
             !result.standardOutput.contains('OH NO!')
         }
         result.standardError.contains('Task failed after 1 attempts with exit code 4.')
-        result.standardError.contains('https://circle.palantir.build/output/job/de700126-0f58-4624-aed3-1cdd297ed785/artifacts/2/~/circle-artifacts/project.foo.log')
+        result.standardError.contains('https://mycircle.url/output/job/de700126-0f58-4624-aed3-1cdd297ed785/artifacts/2/~/circle-artifacts/project.foo.log')
 
         String executable = OperatingSystem.get() == OperatingSystem.MACOS ? "/bin/sh" : "sh"
         result.standardError.contains('''
@@ -186,7 +187,7 @@ class BetterExecIntegTest extends IntegrationSpec {
         new File(getProjectDir(), "subdir").mkdir()
         File script = new File(getProjectDir(), "subdir/script")
 
-        script.write( """
+        script.write("""
             #!/bin/sh
             env | grep FOO
         """.stripIndent(true))
