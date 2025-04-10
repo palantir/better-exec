@@ -1,7 +1,7 @@
 buildscript {
     repositories {
-        gradlePluginPortal() { metadataSources { mavenPom(); ignoreGradleMetadataRedirection() } }
         mavenCentral() { metadataSources { mavenPom(); ignoreGradleMetadataRedirection() } }
+        gradlePluginPortal() { metadataSources { mavenPom(); ignoreGradleMetadataRedirection() } }
     }
 
     dependencies {
@@ -45,8 +45,8 @@ allprojects {
     group 'com.palantir.gradle.better-exec'
 
     repositories {
-        gradlePluginPortal()
         mavenCentral() { metadataSources { mavenPom(); ignoreGradleMetadataRedirection() } }
+        gradlePluginPortal()
     }
 
     tasks.check.dependsOn javadoc, checkUnusedDependencies
