@@ -123,9 +123,9 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
 
         String circleUrl = EnvironmentVariables.envVarOrFromTestingProperty(getProject(), "CIRCLE_BUILD_URL")
                 .map(BetterExec::extractDomain)
-                .orElse("<circle_url>");
+                .orElse("https://<circle_url>");
         return String.format(
-                "See output at: https://%s/output/job/%s/artifacts/%s",
+                "See output at: %s/output/job/%s/artifacts/%s",
                 circleUrl,
                 circleWorkflowJobId.get(),
                 circleNodeIndex.get()
