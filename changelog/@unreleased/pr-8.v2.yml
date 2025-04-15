@@ -1,0 +1,5 @@
+type: fix
+fix:
+  description: Ensure artifacts url is output correctly
+  links:
+  - https://github.com/palantir/better-exec/pull/8
