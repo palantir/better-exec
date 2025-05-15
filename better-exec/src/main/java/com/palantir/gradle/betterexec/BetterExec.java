@@ -57,7 +57,7 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
     }
 
     @TaskAction
-    public final void exec() {
+    public void exec() {
         WorkQueue workQueue = getWorkerExecutor().noIsolation();
 
         workQueue.submit(BetterExecAction.class, params -> {
