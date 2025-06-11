@@ -32,6 +32,7 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
 
     private final SerializableOrSpec<String> retryWhen = SerializableOrSpec.empty();
 
+    @SuppressWarnings("for-rollout:UnnecessarilyVisible")
     @Inject
     protected abstract WorkerExecutor getWorkerExecutor();
 
@@ -89,7 +90,7 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
      * */
     @Deprecated
     @SuppressWarnings({"DoNotCallSuggester", "rawtypes"})
-    public final void retryWhen(Closure _closure) {
+    public final void retryWhen(@SuppressWarnings("for-rollout:IdentifierName") Closure _closure) {
         throw new UnsupportedOperationException("Groovy closures are not supported by retryWhen. "
                 + "Please use `retryWhenOutputContains 'substring'` from Gradle groovy scripts. "
                 + "A Gradle implementation detail required to make this task run in parallel means that predicates for "
@@ -105,6 +106,7 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
                 .isPresent();
     }
 
+    @SuppressWarnings("for-rollout:Java8ApiChecker")
     private String circleArtifactsLogFileLocation() {
         Optional<String> circleWorkflowJobId =
                 EnvironmentVariables.envVarOrFromTestingProperty(getProject(), "CIRCLE_WORKFLOW_JOB_ID");
