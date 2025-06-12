@@ -50,11 +50,9 @@ abstract class BetterExecAction implements WorkAction<BetterExecWorkParams> {
     @SuppressWarnings("checkstyle:RedundantModifier")
     public BetterExecAction() {}
 
-    @SuppressWarnings("for-rollout:UnnecessarilyVisible")
     @Inject
     protected abstract ExecOperations getExecOperations();
 
-    @SuppressWarnings("for-rollout:ThrowSpecificExceptions")
     @Override
     public final void execute() {
         Optional<File> outputLogFile = Optional.ofNullable(
@@ -119,7 +117,6 @@ abstract class BetterExecAction implements WorkAction<BetterExecWorkParams> {
         }
     }
 
-    @SuppressWarnings("for-rollout:ThrowSpecificExceptions")
     private static BufferedOutputStream bufferedOutputStream(File file) {
         try {
             return new BufferedOutputStream(new FileOutputStream(file));
@@ -128,7 +125,6 @@ abstract class BetterExecAction implements WorkAction<BetterExecWorkParams> {
         }
     }
 
-    @SuppressWarnings({"for-rollout:AndroidJdkLibsChecker", "for-rollout:Java8ApiChecker"})
     private Result executeCommandOnce(List<String> processedCommand) {
         ByteArrayOutputStream inMemoryOutput = new ByteArrayOutputStream();
         @SuppressWarnings("for-rollout:SystemOut")
@@ -182,18 +178,16 @@ abstract class BetterExecAction implements WorkAction<BetterExecWorkParams> {
                 .orElse(commandLineArgs);
     }
 
-    @SuppressWarnings("for-rollout:StreamFlatMapOptional")
     private Optional<Path> maybeGetCommandPath(String command) {
         return Stream.of(System.getenv("PATH").split(":"))
                 .map(Paths::get)
                 .filter(Files::isDirectory)
                 .map(dir -> maybeGetCommandPath(dir, command))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
+                .<Path>mapMulti(Optional::ifPresent)
                 .findFirst();
     }
 
-    @SuppressWarnings({"for-rollout:InconsistentOverloads", "for-rollout:ThrowSpecificExceptions"})
+    @SuppressWarnings("for-rollout:InconsistentOverloads")
     private static Optional<Path> maybeGetCommandPath(Path directory, String command) {
         try (Stream<Path> contents = Files.list(directory)) {
             return contents.filter(
