@@ -76,7 +76,6 @@ abstract class BetterExecAction implements WorkAction<BetterExecWorkParams> {
                     return;
                 }
 
-                @SuppressWarnings("for-rollout:NegativeBoolean")
                 boolean notGoingToRetry = getParameters().getRetryWhen().get().isEmpty()
                         || !getParameters().getRetryWhen().get().isSatisfiedBy(result.output)
                         || attempt == lastAttempt;
@@ -127,7 +126,6 @@ abstract class BetterExecAction implements WorkAction<BetterExecWorkParams> {
 
     private Result executeCommandOnce(List<String> processedCommand) {
         ByteArrayOutputStream inMemoryOutput = new ByteArrayOutputStream();
-        @SuppressWarnings("for-rollout:SystemOut")
         OutputStream logOutput = getParameters().getShowRealTimeLogs().get()
                 ? new TeeOutputStream(System.out, inMemoryOutput)
                 : inMemoryOutput;
@@ -187,7 +185,6 @@ abstract class BetterExecAction implements WorkAction<BetterExecWorkParams> {
                 .findFirst();
     }
 
-    @SuppressWarnings("for-rollout:InconsistentOverloads")
     private static Optional<Path> maybeGetCommandPath(Path directory, String command) {
         try (Stream<Path> contents = Files.list(directory)) {
             return contents.filter(
