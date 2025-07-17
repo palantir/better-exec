@@ -53,6 +53,7 @@ abstract class BetterExecAction implements WorkAction<BetterExecWorkParams> {
     @Inject
     protected abstract ExecOperations getExecOperations();
 
+    @SuppressWarnings("for-rollout:PreferUncheckedIoException")
     @Override
     public final void execute() {
         Optional<File> outputLogFile = Optional.ofNullable(
@@ -116,6 +117,7 @@ abstract class BetterExecAction implements WorkAction<BetterExecWorkParams> {
         }
     }
 
+    @SuppressWarnings("for-rollout:PreferUncheckedIoException")
     private static BufferedOutputStream bufferedOutputStream(File file) {
         try {
             return new BufferedOutputStream(new FileOutputStream(file));
@@ -185,6 +187,7 @@ abstract class BetterExecAction implements WorkAction<BetterExecWorkParams> {
                 .findFirst();
     }
 
+    @SuppressWarnings("for-rollout:PreferUncheckedIoException")
     private static Optional<Path> maybeGetCommandPath(Path directory, String command) {
         try (Stream<Path> contents = Files.list(directory)) {
             return contents.filter(
