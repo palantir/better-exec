@@ -25,6 +25,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -53,7 +54,6 @@ abstract class BetterExecAction implements WorkAction<BetterExecWorkParams> {
     @Inject
     protected abstract ExecOperations getExecOperations();
 
-    @SuppressWarnings("for-rollout:PreferUncheckedIoException")
     @Override
     public final void execute() {
         Optional<File> outputLogFile = Optional.ofNullable(
@@ -113,16 +113,15 @@ abstract class BetterExecAction implements WorkAction<BetterExecWorkParams> {
                 log.warn("{}", retryMessage);
             }
         } catch (IOException e) {
-            throw new RuntimeException("Failed", e);
+            throw new UncheckedIOException("Failed", e);
         }
     }
 
-    @SuppressWarnings("for-rollout:PreferUncheckedIoException")
     private static BufferedOutputStream bufferedOutputStream(File file) {
         try {
             return new BufferedOutputStream(new FileOutputStream(file));
         } catch (FileNotFoundException e) {
-            throw new RuntimeException("Could not find file " + file, e);
+            throw new UncheckedIOException("Could not find file " + file, e);
         }
     }
 
@@ -187,14 +186,13 @@ abstract class BetterExecAction implements WorkAction<BetterExecWorkParams> {
                 .findFirst();
     }
 
-    @SuppressWarnings("for-rollout:PreferUncheckedIoException")
     private static Optional<Path> maybeGetCommandPath(Path directory, String command) {
         try (Stream<Path> contents = Files.list(directory)) {
             return contents.filter(
                             executable -> executable.getFileName().toString().equals(command))
                     .findFirst();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
