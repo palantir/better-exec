@@ -35,6 +35,7 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
     @Inject
     protected abstract WorkerExecutor getWorkerExecutor();
 
+    @SuppressWarnings("for-rollout:IllegalMethodCalledDuringTaskExecution")
     public BetterExec() {
         getWorkingDir().set(".");
 
@@ -100,14 +101,17 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
         retryWhen(output -> output.contains(substring));
     }
 
+    @SuppressWarnings("for-rollout:IllegalMethodCalledDuringTaskExecution")
     private boolean isOnCi() {
         return EnvironmentVariables.envVarOrFromTestingProperty(getProject(), "CI")
                 .isPresent();
     }
 
     private String circleArtifactsLogFileLocation() {
+        @SuppressWarnings("for-rollout:IllegalMethodCalledDuringTaskExecution")
         Optional<String> circleWorkflowJobId =
                 EnvironmentVariables.envVarOrFromTestingProperty(getProject(), "CIRCLE_WORKFLOW_JOB_ID");
+        @SuppressWarnings("for-rollout:IllegalMethodCalledDuringTaskExecution")
         Optional<String> circleNodeIndex =
                 EnvironmentVariables.envVarOrFromTestingProperty(getProject(), "CIRCLE_NODE_INDEX");
 
@@ -118,9 +122,11 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
             return "";
         }
 
+        @SuppressWarnings("for-rollout:IllegalMethodCalledDuringTaskExecution")
         String circleHome = EnvironmentVariables.envVarOrFromTestingProperty(getProject(), "CIRCLE_HOME_DIRECTORY")
                 .orElse("/home/circleci/");
 
+        @SuppressWarnings("for-rollout:IllegalMethodCalledDuringTaskExecution")
         String circleUrl = EnvironmentVariables.envVarOrFromTestingProperty(getProject(), "CIRCLE_BUILD_URL")
                 .map(BetterExec::extractDomain)
                 .orElse("https://<circle_url>");
