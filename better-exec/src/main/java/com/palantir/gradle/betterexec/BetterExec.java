@@ -35,7 +35,6 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
     @Inject
     protected abstract WorkerExecutor getWorkerExecutor();
 
-    @SuppressWarnings("for-rollout:IllegalMethodCalledDuringTaskExecution")
     public BetterExec() {
         getWorkingDir().set(".");
 
