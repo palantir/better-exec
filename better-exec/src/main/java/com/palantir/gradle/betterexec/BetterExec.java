@@ -15,15 +15,16 @@
  */
 package com.palantir.gradle.betterexec;
 
+import com.palantir.gradle.utils.circleciartifacts.ArtifactLocation;
+import com.palantir.gradle.utils.circleciartifacts.CircleCiArtifacts;
 import groovy.lang.Closure;
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javax.inject.Inject;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.provider.Provider;
+import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.workers.WorkQueue;
 import org.gradle.workers.WorkerExecutor;
@@ -34,6 +35,12 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
 
     @Inject
     protected abstract WorkerExecutor getWorkerExecutor();
+
+    @Nested
+    protected abstract CircleCiArtifacts getCircleCiArtifacts();
+
+    @Nested
+    protected abstract com.palantir.gradle.utils.environmentvariables.EnvironmentVariables getEnvironmentVariables();
 
     public BetterExec() {
         getWorkingDir().set(".");
@@ -51,7 +58,7 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
                                 .get())
                         .orElse(null)));
 
-        getShowRealTimeLogs().set(!isOnCi());
+        getShowRealTimeLogs().set(isOnCi().map(isOnCi -> !isOnCi));
         getCheckExitStatus().set(true);
         getMaxRetries().set(getProject().provider(() -> retryWhen.isEmpty() ? 1 : 5));
     }
@@ -100,49 +107,19 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
         retryWhen(output -> output.contains(substring));
     }
 
-    @SuppressWarnings("for-rollout:IllegalMethodCalledDuringTaskExecution")
-    private boolean isOnCi() {
-        return EnvironmentVariables.envVarOrFromTestingProperty(getProject(), "CI")
-                .isPresent();
+    private Provider<Boolean> isOnCi() {
+        return getEnvironmentVariables()
+                .envVarOrFromTestingProperty("CI")
+                .map(_value -> true)
+                .orElse(false);
     }
 
-    private String circleArtifactsLogFileLocation() {
-        @SuppressWarnings("for-rollout:IllegalMethodCalledDuringTaskExecution")
-        Optional<String> circleWorkflowJobId =
-                EnvironmentVariables.envVarOrFromTestingProperty(getProject(), "CIRCLE_WORKFLOW_JOB_ID");
-        @SuppressWarnings("for-rollout:IllegalMethodCalledDuringTaskExecution")
-        Optional<String> circleNodeIndex =
-                EnvironmentVariables.envVarOrFromTestingProperty(getProject(), "CIRCLE_NODE_INDEX");
-
-        if (!isOnCi()
-                || circleWorkflowJobId.isEmpty()
-                || circleNodeIndex.isEmpty()
-                || !getCircleLogFilePath().isPresent()) {
-            return "";
-        }
-
-        @SuppressWarnings("for-rollout:IllegalMethodCalledDuringTaskExecution")
-        String circleHome = EnvironmentVariables.envVarOrFromTestingProperty(getProject(), "CIRCLE_HOME_DIRECTORY")
-                .orElse("/home/circleci/");
-
-        @SuppressWarnings("for-rollout:IllegalMethodCalledDuringTaskExecution")
-        String circleUrl = EnvironmentVariables.envVarOrFromTestingProperty(getProject(), "CIRCLE_BUILD_URL")
-                .map(BetterExec::extractDomain)
-                .orElse("https://<circle_url>");
-        return String.format(
-                "See output at: %s/output/job/%s/artifacts/%s",
-                circleUrl,
-                circleWorkflowJobId.get(),
-                circleNodeIndex.get()
-                        + getCircleLogFilePath().getAsFile().get().toString().replace(circleHome, "/~/"));
-    }
-
-    public static String extractDomain(String url) {
-        try {
-            URL urlObj = new URL(url);
-            return urlObj.getProtocol() + "://" + urlObj.getHost();
-        } catch (MalformedURLException e) {
-            return "Invalid URL";
-        }
+    private Provider<String> circleArtifactsLogFileLocation() {
+        return isOnCi().flatMap(_onCI -> getCircleLogFilePath()
+                        .flatMap(file -> getCircleCiArtifacts()
+                                .resolveArtifactLocation(file.getAsFile().getPath())
+                                .map(ArtifactLocation::circleLink))
+                        .orElse(""))
+                .orElse("");
     }
 }
