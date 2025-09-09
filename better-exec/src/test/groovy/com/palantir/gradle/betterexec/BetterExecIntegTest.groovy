@@ -40,7 +40,7 @@ class BetterExecIntegTest extends IntegrationSpec {
             __TESTING_CIRCLE_NODE_INDEX=2
             __TESTING_CIRCLE_BUILD_URL=https://mycircle.url/gh/palantir/better-exec/1581
             __TESTING_CIRCLE_PROJECT_USERNAME=foo
-            __TESTING_CIRCLE_PROJECT_REPONAME=foo
+            __TESTING_CIRCLE_PROJECT_REPONAME=bar
             __TESTING_CIRCLE_BUILD_NUM=1
         """.stripIndent(true)
     }
