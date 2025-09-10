@@ -48,7 +48,7 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
     public BetterExec() {
         getWorkingDir().set(".");
 
-        getArtifactLocation().set(findAvailableLocation(getProject().getName() + "." + getName(), 0));
+        getArtifactLocation().set(findAvailableLocation(getProject().getName() + "." + getName(), 1));
         getCircleLogFilePath()
                 .fileProvider(getArtifactLocation()
                         .map(ArtifactLocation::physicalPath)
@@ -112,12 +112,14 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
     }
 
     private Provider<ArtifactLocation> findAvailableLocation(String baseName, int suffix) {
-        String fileName = baseName + (suffix == 0 ? "" : suffix) + ".log";
+        String fileName = baseName + (suffix == 1 ? "" : "." + suffix) + ".log";
         Provider<ArtifactLocation> location = getCircleCiArtifacts().resolveArtifactLocation(fileName);
 
         return location.flatMap(loc -> {
             if (!loc.physicalPath().getAsFile().exists()) {
                 return location; // Found a free spot
+            } else if (suffix >= 1000) {
+                return null; // Failed to find a free spot prevent infinite recursion
             } else {
                 return findAvailableLocation(baseName, suffix + 1); // Try next
             }
