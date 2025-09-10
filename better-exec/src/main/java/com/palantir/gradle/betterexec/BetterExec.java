@@ -114,11 +114,9 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
 
         return location.flatMap(loc -> {
             if (!loc.physicalPath().getAsFile().exists()) {
-                return location; // Found a free spot
-            } else if (suffix >= 1000) {
-                return null; // Failed to find a free spot prevent infinite recursion
+                return location;
             } else {
-                return findAvailableLocation(baseName, suffix + 1); // Try next
+                return findAvailableLocation(baseName, suffix + 1);
             }
         });
     }
