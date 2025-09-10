@@ -17,13 +17,12 @@ package com.palantir.gradle.betterexec;
 
 import com.palantir.gradle.utils.circleciartifacts.ArtifactLocation;
 import com.palantir.gradle.utils.circleciartifacts.CircleCiArtifacts;
+import com.palantir.gradle.utils.environmentvariables.EnvironmentVariables;
 import groovy.lang.Closure;
 import javax.inject.Inject;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.RegularFile;
-import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
-import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.workers.WorkQueue;
@@ -40,17 +39,13 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
     protected abstract CircleCiArtifacts getCircleCiArtifacts();
 
     @Nested
-    protected abstract com.palantir.gradle.utils.environmentvariables.EnvironmentVariables getEnvironmentVariables();
-
-    @Internal
-    protected abstract Property<ArtifactLocation> getArtifactLocation();
+    protected abstract EnvironmentVariables getEnvironmentVariables();
 
     public BetterExec() {
         getWorkingDir().set(".");
 
-        getArtifactLocation().set(findAvailableLocation(getProject().getName() + "." + getName(), 1));
         getCircleLogFilePath()
-                .fileProvider(getArtifactLocation()
+                .fileProvider(findAvailableLocation(getProject().getName() + "." + getName(), 1)
                         .map(ArtifactLocation::physicalPath)
                         .map(RegularFile::getAsFile));
 
@@ -78,7 +73,9 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
             params.getRetryWhen().set(retryWhen);
             params.getIsOnCi().set(isOnCi());
             params.getCircleArtifactsUrlLocation()
-                    .set(getArtifactLocation().map(ArtifactLocation::circleLink).orElse(""));
+                    .set(findAvailableLocation(getProject().getName() + "." + getName(), 1)
+                            .map(ArtifactLocation::circleLink)
+                            .orElse(""));
         });
     }
 
