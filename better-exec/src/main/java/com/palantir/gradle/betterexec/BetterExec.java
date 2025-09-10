@@ -19,6 +19,7 @@ import com.palantir.gradle.utils.circleciartifacts.ArtifactLocation;
 import com.palantir.gradle.utils.circleciartifacts.CircleCiArtifacts;
 import com.palantir.gradle.utils.environmentvariables.EnvironmentVariables;
 import groovy.lang.Closure;
+import java.util.stream.IntStream;
 import javax.inject.Inject;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.RegularFile;
@@ -41,11 +42,15 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
     @Nested
     protected abstract EnvironmentVariables getEnvironmentVariables();
 
+    private final String baseName;
+
     public BetterExec() {
+        this.baseName = getProject().getName() + "." + getName();
+
         getWorkingDir().set(".");
 
         getCircleLogFilePath()
-                .fileProvider(findAvailableLocation(getProject().getName() + "." + getName(), 1)
+                .fileProvider(findAvailableLocation()
                         .map(ArtifactLocation::physicalPath)
                         .map(RegularFile::getAsFile));
 
@@ -73,7 +78,7 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
             params.getRetryWhen().set(retryWhen);
             params.getIsOnCi().set(isOnCi());
             params.getCircleArtifactsUrlLocation()
-                    .set(findAvailableLocation(getProject().getName() + "." + getName(), 1)
+                    .set(findAvailableLocation()
                             .map(ArtifactLocation::circleLink)
                             .orElse(""));
         });
@@ -108,16 +113,22 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
                 .orElse(false);
     }
 
-    private Provider<ArtifactLocation> findAvailableLocation(String baseName, int suffix) {
-        String fileName = baseName + (suffix == 1 ? "" : "." + suffix) + ".log";
-        Provider<ArtifactLocation> location = getCircleCiArtifacts().resolveArtifactLocation(fileName);
-
-        return location.flatMap(loc -> {
-            if (!loc.physicalPath().getAsFile().exists()) {
+    private Provider<ArtifactLocation> findAvailableLocation() {
+        return getCircleCiArtifacts().resolveArtifactLocation(baseName + ".log").map(location -> {
+            if (!location.physicalPath().getAsFile().exists()) {
                 return location;
-            } else {
-                return findAvailableLocation(baseName, suffix + 1);
             }
+
+            return IntStream.iterate(2, i -> i + 1)
+                    .mapToObj(i -> {
+                        String fileName = baseName + "." + i + ".log";
+                        return getCircleCiArtifacts()
+                                .resolveArtifactLocation(fileName)
+                                .get();
+                    })
+                    .filter(loc -> !loc.physicalPath().getAsFile().exists())
+                    .findFirst()
+                    .get();
         });
     }
 }
