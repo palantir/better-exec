@@ -50,7 +50,6 @@ allprojects {
     repositories {
         mavenCentral() { metadataSources { mavenPom(); ignoreGradleMetadataRedirection() } }
         gradlePluginPortal()
-        mavenLocal()
     }
 
     tasks.check.dependsOn javadoc, checkUnusedDependencies
