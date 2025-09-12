@@ -205,7 +205,6 @@ abstract class BetterExecAction implements WorkAction<BetterExecWorkParams> {
             this.output = output;
         }
 
-        @SuppressWarnings("for-rollout:EffectivelyPrivate")
         public boolean successful() {
             return !getParameters().getCheckExitStatus().get() || exitCode == 0;
         }
