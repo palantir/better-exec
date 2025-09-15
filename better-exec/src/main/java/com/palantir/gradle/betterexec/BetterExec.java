@@ -23,7 +23,9 @@ import java.util.stream.IntStream;
 import javax.inject.Inject;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.RegularFile;
+import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
+import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.workers.WorkQueue;
@@ -42,15 +44,17 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
     @Nested
     protected abstract EnvironmentVariables getEnvironmentVariables();
 
-    private final String baseName;
+    @Internal
+    protected abstract Property<ArtifactLocation> getArtifactLocation();
 
     public BetterExec() {
-        this.baseName = getProject().getName() + "." + getName();
+        getArtifactLocation().set(findAvailableLocation(getProject().getName() + "." + getName()));
+        getArtifactLocation().finalizeValueOnRead();
 
         getWorkingDir().set(".");
 
         getCircleLogFilePath()
-                .fileProvider(findAvailableLocation()
+                .fileProvider(getArtifactLocation()
                         .map(ArtifactLocation::physicalPath)
                         .map(RegularFile::getAsFile));
 
@@ -78,9 +82,7 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
             params.getRetryWhen().set(retryWhen);
             params.getIsOnCi().set(isOnCi());
             params.getCircleArtifactsUrlLocation()
-                    .set(findAvailableLocation()
-                            .map(ArtifactLocation::circleLink)
-                            .orElse(""));
+                    .set(getArtifactLocation().map(ArtifactLocation::circleLink).orElse(""));
         });
     }
 
@@ -113,7 +115,7 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
                 .orElse(false);
     }
 
-    private Provider<ArtifactLocation> findAvailableLocation() {
+    private Provider<ArtifactLocation> findAvailableLocation(String baseName) {
         return getCircleCiArtifacts().resolveArtifactLocation(baseName + ".log").map(location -> {
             if (!location.physicalPath().getAsFile().exists()) {
                 return location;
