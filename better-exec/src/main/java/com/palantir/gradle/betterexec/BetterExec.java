@@ -26,7 +26,6 @@ import org.gradle.api.file.RegularFile;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Internal;
-import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.workers.WorkQueue;
 import org.gradle.workers.WorkerExecutor;
@@ -38,16 +37,19 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
     @Inject
     protected abstract WorkerExecutor getWorkerExecutor();
 
-    @Nested
-    protected abstract CircleCiArtifacts getCircleCiArtifacts();
+    private final CircleCiArtifacts circleCiArtifacts;
 
-    @Nested
-    protected abstract EnvironmentVariables getEnvironmentVariables();
+    private final EnvironmentVariables environmentVariables;
 
     @Internal
     protected abstract Property<ArtifactLocation> getArtifactLocation();
 
     public BetterExec() {
+        // We should not inject this class is extend and injecting would make them part of our API which can cause
+        // issues if the user has their own EnvironmentVariables class
+        this.environmentVariables = getProject().getObjects().newInstance(EnvironmentVariables.class);
+        this.circleCiArtifacts = getProject().getObjects().newInstance(CircleCiArtifacts.class);
+
         getArtifactLocation().set(findAvailableLocation(getProject().getName() + "." + getName()));
         getArtifactLocation().finalizeValueOnRead();
 
@@ -109,14 +111,14 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
     }
 
     private Provider<Boolean> isOnCi() {
-        return getEnvironmentVariables()
+        return environmentVariables
                 .envVarOrFromTestingProperty("CI")
                 .map(_value -> true)
                 .orElse(false);
     }
 
     private Provider<ArtifactLocation> findAvailableLocation(String baseName) {
-        return getCircleCiArtifacts().resolveArtifactLocation(baseName + ".log").map(location -> {
+        return circleCiArtifacts.resolveArtifactLocation(baseName + ".log").map(location -> {
             if (!location.physicalPath().getAsFile().exists()) {
                 return location;
             }
@@ -124,7 +126,7 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
             return IntStream.iterate(2, i -> i + 1)
                     .mapToObj(i -> {
                         String fileName = baseName + "." + i + ".log";
-                        return getCircleCiArtifacts()
+                        return circleCiArtifacts
                                 .resolveArtifactLocation(fileName)
                                 .get();
                     })
