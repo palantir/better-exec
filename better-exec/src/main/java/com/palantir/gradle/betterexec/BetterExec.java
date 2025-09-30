@@ -41,18 +41,13 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
     @Nested
     protected abstract CircleCiArtifacts getCircleCiArtifacts();
 
-    private final EnvironmentVariables environmentVariables;
+    @Nested
+    protected abstract EnvironmentVariables getEnvVarsFromUtils();
 
     @Internal
     protected abstract Property<ArtifactLocation> getArtifactLocation();
 
     public BetterExec() {
-        // We should not inject the EnvironmentVariables class because BetterExec is extended by consumers who may
-        // provide their own EnvironmentVariables implementation. If we inject EnvironmentVariables, it would become
-        // part of our API, which can result in a class conflict if the consumer has their own EnvironmentVariables
-        // class.
-        this.environmentVariables = getProject().getObjects().newInstance(EnvironmentVariables.class);
-
         getArtifactLocation().set(findAvailableLocation(getProject().getName() + "." + getName()));
         getArtifactLocation().finalizeValueOnRead();
 
@@ -114,7 +109,7 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
     }
 
     private Provider<Boolean> isOnCi() {
-        return environmentVariables
+        return getEnvVarsFromUtils()
                 .envVarOrFromTestingProperty("CI")
                 .map(_value -> true)
                 .orElse(false);
