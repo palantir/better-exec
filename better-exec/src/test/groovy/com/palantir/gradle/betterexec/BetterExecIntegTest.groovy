@@ -177,10 +177,7 @@ class BetterExecIntegTest extends IntegrationSpec {
         def result = runTasksWithFailure('foo')
 
         then:
-        result.standardError.contains("docker:") && (
-            result.standardError.contains("'test' is not a docker command.") ||
-            result.standardError.contains("unknown command: docker test")
-        )
+        result.standardError.contains("docker: 'test' is not a docker command.")
         if (OperatingSystem.get() == OperatingSystem.MACOS) {
             result.standardError.contains("Command: [/usr/local/bin/docker, test]")
         } else {
