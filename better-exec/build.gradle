@@ -8,8 +8,8 @@ dependencies {
 
     implementation 'com.palantir.gradle.failure-reports:gradle-failure-reports-exceptions'
     implementation 'com.palantir.gradle.utils:platform'
-    implementation 'com.palantir.gradle.utils:circleci-artifacts'
-    implementation 'com.palantir.gradle.utils:environment-variables'
+    api 'com.palantir.gradle.utils:circleci-artifacts'
+    api 'com.palantir.gradle.utils:environment-variables'
 
     testImplementation gradleApi()
     testImplementation 'com.netflix.nebula:nebula-test'
