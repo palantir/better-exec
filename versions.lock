@@ -1,6 +1,6 @@
 # Run ./gradlew writeVersionsLocks to regenerate this file. Blank lines are to minimize merge conflicts.
 
-com.fasterxml.jackson.core:jackson-annotations:2.20 (4 constraints: 3e3d613b)
+com.fasterxml.jackson.core:jackson-annotations:2.20 (4 constraints: d63c01c1)
 
 com.fasterxml.jackson.core:jackson-core:2.20.0 (2 constraints: eb295a12)
 
@@ -24,15 +24,15 @@ com.palantir.gradle.failure-reports:gradle-failure-reports-common:1.13.0 (1 cons
 
 com.palantir.gradle.failure-reports:gradle-failure-reports-exceptions:1.13.0 (1 constraints: 3705323b)
 
-com.palantir.gradle.utils:circleci-artifacts:0.19.0 (1 constraints: 3c053e3b)
+com.palantir.gradle.utils:circleci-artifacts:0.20.0 (1 constraints: 3405273b)
 
-com.palantir.gradle.utils:environment-variables:0.19.0 (2 constraints: 3718378a)
+com.palantir.gradle.utils:environment-variables:0.20.0 (2 constraints: 27185988)
 
-com.palantir.gradle.utils:exec:0.19.0 (1 constraints: 350f7276)
+com.palantir.gradle.utils:exec:0.20.0 (1 constraints: 2d0f5b76)
 
-com.palantir.gradle.utils:platform:0.19.0 (1 constraints: 3c053e3b)
+com.palantir.gradle.utils:platform:0.20.0 (1 constraints: 3405273b)
 
-com.palantir.gradle.utils:providers:0.19.0 (2 constraints: 7020c85d)
+com.palantir.gradle.utils:providers:0.20.0 (2 constraints: 60205a5c)
 
 org.codehaus.woodstox:stax2-api:4.2.2 (2 constraints: 6a278bd2)
 
