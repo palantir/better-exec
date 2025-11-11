@@ -24,15 +24,15 @@ com.palantir.gradle.failure-reports:gradle-failure-reports-common:1.13.0 (1 cons
 
 com.palantir.gradle.failure-reports:gradle-failure-reports-exceptions:1.13.0 (1 constraints: 3705323b)
 
-com.palantir.gradle.utils:circleci-artifacts:0.20.0 (1 constraints: 3405273b)
+com.palantir.gradle.utils:circleci-artifacts:0.21.0 (1 constraints: 35052a3b)
 
-com.palantir.gradle.utils:environment-variables:0.20.0 (2 constraints: 27185988)
+com.palantir.gradle.utils:environment-variables:0.21.0 (2 constraints: 29189588)
 
-com.palantir.gradle.utils:exec:0.20.0 (1 constraints: 2d0f5b76)
+com.palantir.gradle.utils:exec:0.21.0 (1 constraints: 2e0f5e76)
 
-com.palantir.gradle.utils:platform:0.20.0 (1 constraints: 3405273b)
+com.palantir.gradle.utils:platform:0.21.0 (1 constraints: 35052a3b)
 
-com.palantir.gradle.utils:providers:0.20.0 (2 constraints: 60205a5c)
+com.palantir.gradle.utils:providers:0.21.0 (2 constraints: 6220885c)
 
 org.codehaus.woodstox:stax2-api:4.2.2 (2 constraints: 6a278bd2)
 
