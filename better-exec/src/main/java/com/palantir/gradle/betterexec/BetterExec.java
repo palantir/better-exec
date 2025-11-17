@@ -97,7 +97,7 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
      * */
     @Deprecated
     @SuppressWarnings({"DoNotCallSuggester", "rawtypes"})
-    public final void retryWhen(Closure _closure) {
+    public final void retryWhen(@SuppressWarnings("for-rollout:RawTypes") Closure _closure) {
         throw new UnsupportedOperationException("Groovy closures are not supported by retryWhen. "
                 + "Please use `retryWhenOutputContains 'substring'` from Gradle groovy scripts. "
                 + "A Gradle implementation detail required to make this task run in parallel means that predicates for "
