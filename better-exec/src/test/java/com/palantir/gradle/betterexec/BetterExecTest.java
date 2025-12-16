@@ -17,17 +17,16 @@
 package com.palantir.gradle.betterexec;
 
 import static com.palantir.gradle.testing.assertion.GradlePluginTestAssertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThat;
 
 import com.palantir.gradle.testing.execution.GradleInvoker;
 import com.palantir.gradle.testing.execution.InvocationResult;
+import com.palantir.gradle.testing.files.arbitrary.ArbitraryFile;
 import com.palantir.gradle.testing.junit.DisabledConfigurationCache;
 import com.palantir.gradle.testing.junit.GradlePluginTests;
 import com.palantir.gradle.testing.project.RootProject;
 import com.palantir.platform.OperatingSystem;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.Properties;
 import java.util.Set;
@@ -84,13 +83,12 @@ class BetterExecTest {
                 .appendProperty("__TESTING_CIRCLE_BUILD_NUM", "1");
     }
 
-    String circleArtifactsLogOutput(RootProject rootProject, String taskName) throws IOException {
-        return Files.readString(rootProject.path().resolve("circle-artifacts/project." + taskName + ".log"));
+    ArbitraryFile circleArtifactsLog(RootProject rootProject, String taskName) {
+        return rootProject.file("circle-artifacts/project." + taskName + ".log");
     }
 
     @Test
-    void passing_better_exec_should_output_to_log_file(GradleInvoker gradle, RootProject rootProject)
-            throws IOException {
+    void passing_better_exec_should_output_to_log_file(GradleInvoker gradle, RootProject rootProject) {
         rootProject.directory("subdir").createDirectories();
 
         rootProject.buildGradle().append("""
@@ -103,12 +101,11 @@ class BetterExecTest {
 
         gradle.withArgs("foo").buildsSuccessfully();
 
-        String output = circleArtifactsLogOutput(rootProject, "foo");
-        assertThat(output).isEqualTo("Hello I am in: subdir, also: bar\n");
+        circleArtifactsLog(rootProject, "foo").assertThat().hasContent("Hello I am in: subdir, also: bar\n");
     }
 
     @Test
-    void outputs_to_custom_log_file_location(GradleInvoker gradle, RootProject rootProject) throws IOException {
+    void outputs_to_custom_log_file_location(GradleInvoker gradle, RootProject rootProject) {
         rootProject.buildGradle().append("""
             task foo(type: BetterExec) {
                 command = ['sh', '-c', 'echo Hello']
@@ -118,13 +115,12 @@ class BetterExecTest {
 
         gradle.withArgs("foo").buildsSuccessfully();
 
-        String output = Files.readString(rootProject.path().resolve("output.log"));
-        assertThat(output).isEqualTo("Hello\n");
+        rootProject.file("output.log").assertThat().hasContent("Hello\n");
     }
 
     @Test
     void when_task_is_run_over_multiple_gradle_invocations_the_output_log_makes_a_new_file_each_time(
-            GradleInvoker gradle, RootProject rootProject) throws IOException {
+            GradleInvoker gradle, RootProject rootProject) {
         rootProject.buildGradle().append("""
             task foo(type: BetterExec) {
                 command = ['sh', '-c', 'echo Hello']
@@ -134,15 +130,12 @@ class BetterExecTest {
         gradle.withArgs("foo").buildsSuccessfully();
         gradle.withArgs("foo").buildsSuccessfully();
 
-        String output1 = circleArtifactsLogOutput(rootProject, "foo");
-        String output2 = circleArtifactsLogOutput(rootProject, "foo.2");
-
-        assertThat(output1).isEqualTo("Hello\n");
-        assertThat(output2).isEqualTo("Hello\n");
+        circleArtifactsLog(rootProject, "foo").assertThat().hasContent("Hello\n");
+        circleArtifactsLog(rootProject, "foo.2").assertThat().hasContent("Hello\n");
     }
 
     @Test
-    void prints_the_custom_error_message(GradleInvoker gradle, RootProject rootProject) throws IOException {
+    void prints_the_custom_error_message(GradleInvoker gradle, RootProject rootProject) {
         rootProject.directory("subdir").createDirectories();
 
         rootProject.buildGradle().append("""
@@ -160,7 +153,7 @@ class BetterExecTest {
     @ParameterizedTest
     @ValueSource(strings = {"true", "false"})
     void failing_better_exec_should_include_logs_in_output_when_show_real_time_logs(
-            String shouldShowRealTimeLogs, GradleInvoker gradle, RootProject rootProject) throws IOException {
+            String shouldShowRealTimeLogs, GradleInvoker gradle, RootProject rootProject) {
         rootProject.directory("subdir").createDirectories();
 
         rootProject.buildGradle().append("""
@@ -174,9 +167,9 @@ class BetterExecTest {
         InvocationResult result = gradle.withArgs("foo").buildsWithFailure();
 
         if (shouldShowRealTimeLogs.equals("true")) {
-            assertThat(result).output().contains("OH NO!");
+            result.assertThat().output().contains("OH NO!");
         } else {
-            assertThat(result).output().doesNotContain("OH NO!");
+            result.assertThat().output().doesNotContain("OH NO!");
         }
 
         String executable = OperatingSystem.get() == OperatingSystem.MACOS ? "/bin/sh" : "sh";
@@ -189,7 +182,7 @@ class BetterExecTest {
             Working dir: subdir\
             """.formatted(executable);
 
-        assertThat(result)
+        result.assertThat()
                 .output()
                 .contains("Task failed after 1 attempts with exit code 4.")
                 .contains(
@@ -208,21 +201,18 @@ class BetterExecTest {
 
         InvocationResult result = gradle.withArgs("foo").buildsWithFailure();
 
-        assertThat(result).output().contains("docker: 'test' is not a docker command.");
+        result.assertThat().output().contains("docker: 'test' is not a docker command.");
         if (OperatingSystem.get() == OperatingSystem.MACOS) {
-            assertThat(result).output().contains("Command: [/usr/local/bin/docker, test]");
+            result.assertThat().output().contains("Command: [/usr/local/bin/docker, test]");
         } else {
-            assertThat(result).output().contains("Command: [docker, test]");
+            result.assertThat().output().contains("Command: [docker, test]");
         }
     }
 
     @Test
     void uses_original_command_line_if_command_is_relative_to_the_working_dir(
             GradleInvoker gradle, RootProject rootProject) throws IOException {
-        rootProject.directory("subdir").createDirectories();
-        Path script = rootProject.directory("subdir").path().resolve("script");
-
-        Files.writeString(script, """
+        rootProject.file("subdir/script").append("""
             #!/bin/sh
             env | grep FOO
             """);
@@ -236,24 +226,16 @@ class BetterExecTest {
             """);
 
         Files.setPosixFilePermissions(
-                script,
-                Set.of(
-                        PosixFilePermission.OWNER_READ,
-                        PosixFilePermission.OWNER_WRITE,
-                        PosixFilePermission.OWNER_EXECUTE,
-                        PosixFilePermission.GROUP_READ,
-                        PosixFilePermission.GROUP_EXECUTE,
-                        PosixFilePermission.OTHERS_READ,
-                        PosixFilePermission.OTHERS_EXECUTE));
+                rootProject.file("subdir/script").path(),
+                Set.of(PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_EXECUTE));
 
         gradle.withArgs("foo").buildsSuccessfully();
 
-        String output = circleArtifactsLogOutput(rootProject, "foo");
-        assertThat(output).isEqualTo("FOO=this is my foo text\n");
+        circleArtifactsLog(rootProject, "foo").assertThat().hasContent("FOO=this is my foo text\n");
     }
 
     @Test
-    void fails_after_exceeding_max_retries(GradleInvoker gradle, RootProject rootProject) throws IOException {
+    void fails_after_exceeding_max_retries(GradleInvoker gradle, RootProject rootProject) {
         rootProject.directory("subdir").createDirectories();
 
         rootProject.buildGradle().append("""
@@ -267,12 +249,11 @@ class BetterExecTest {
 
         InvocationResult result = gradle.withArgs("foo").buildsWithFailure();
 
-        assertThat(result).output().contains("Task failed after 4 attempts with exit code 255.");
+        result.assertThat().output().contains("Task failed after 4 attempts with exit code 255.");
     }
 
     @Test
-    void retries_when_there_is_a_matching_error_based_on_some_predicate(GradleInvoker gradle, RootProject rootProject)
-            throws IOException {
+    void retries_when_there_is_a_matching_error_based_on_some_predicate(GradleInvoker gradle, RootProject rootProject) {
         rootProject.directory("subdir").createDirectories();
 
         rootProject.buildGradle().append("""
@@ -292,15 +273,16 @@ class BetterExecTest {
 
         gradle.withArgs("foo").buildsSuccessfully();
 
-        String output = circleArtifactsLogOutput(rootProject, "foo");
-
-        assertThat(output).contains("Failure");
-        assertThat(output).contains("Retrying after 1 attempt(s) as output matches retryWhen");
+        circleArtifactsLog(rootProject, "foo")
+                .assertThat()
+                .content()
+                .contains("Failure")
+                .contains("Retrying after 1 attempt(s) as output matches retryWhen");
     }
 
     @Test
     void retries_when_there_is_a_matching_error_based_on_retry_when_output_contains(
-            GradleInvoker gradle, RootProject rootProject) throws IOException {
+            GradleInvoker gradle, RootProject rootProject) {
         rootProject.directory("subdir").createDirectories();
 
         rootProject.buildGradle().append("""
@@ -317,10 +299,11 @@ class BetterExecTest {
 
         gradle.withArgs("foo").buildsSuccessfully();
 
-        String output = circleArtifactsLogOutput(rootProject, "foo");
-
-        assertThat(output).contains("Failure");
-        assertThat(output).contains("Retrying after 1 attempt(s) as output matches retryWhen");
+        circleArtifactsLog(rootProject, "foo")
+                .assertThat()
+                .content()
+                .contains("Failure")
+                .contains("Retrying after 1 attempt(s) as output matches retryWhen");
     }
 
     @Test
@@ -372,7 +355,7 @@ class BetterExecTest {
 
         InvocationResult result = gradle.withArgs("printOutputs").buildsSuccessfully();
 
-        assertThat(result).output().contains("foo outputs: []");
+        result.assertThat().output().contains("foo outputs: []");
     }
 
     @Test
