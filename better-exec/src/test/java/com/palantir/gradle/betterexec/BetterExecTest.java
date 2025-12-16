@@ -29,7 +29,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermission;
+import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -38,15 +41,34 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 @GradlePluginTests
 @DisabledConfigurationCache
-class BetterExecIntegTest {
+class BetterExecTest {
 
     @BeforeEach
-    void setup(RootProject rootProject) {
+    void setup(RootProject rootProject) throws IOException {
         rootProject.settingsGradle().rootProjectName("project");
 
-        rootProject.buildGradle().append("""
+        // Add plugin classes to buildscript classpath so they can be imported
+        Properties props = new Properties();
+        props.load(getClass().getClassLoader().getResourceAsStream("plugin-under-test-metadata.properties"));
+        String classpath = Stream.concat(
+                        Stream.of(props.getProperty("implementation-classpath").split(":")),
+                        Stream.of(getClass()
+                                .getProtectionDomain()
+                                .getCodeSource()
+                                .getLocation()
+                                .getPath()))
+                .map(p -> "'" + p + "'")
+                .collect(Collectors.joining(", "));
+
+        rootProject.buildGradle().prepend("""
+            buildscript {
+                dependencies {
+                    classpath files(%s)
+                }
+            }
+
             import com.palantir.gradle.betterexec.BetterExec
-            """);
+            """, classpath);
 
         rootProject
                 .gradlePropertiesFile()
