@@ -17,6 +17,7 @@
 package com.palantir.gradle.betterexec;
 
 import static com.palantir.gradle.testing.assertion.GradlePluginTestAssertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.palantir.gradle.testing.execution.GradleInvoker;
 import com.palantir.gradle.testing.execution.InvocationResult;
@@ -150,7 +151,7 @@ class BetterExecTest {
         assertThat(executionResult).output().contains("This is a custom error message");
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "showRealTimeLogs_{0}")
     @ValueSource(strings = {"true", "false"})
     void failing_better_exec_should_include_logs_in_output_when_show_real_time_logs(
             String shouldShowRealTimeLogs, GradleInvoker gradle, RootProject rootProject) {
@@ -166,10 +167,15 @@ class BetterExecTest {
 
         InvocationResult result = gradle.withArgs("foo").buildsWithFailure();
 
+        // When showRealTimeLogs=true, "OH NO!" appears BEFORE "Task failed" (streamed in real-time)
+        // When showRealTimeLogs=false, "OH NO!" only appears AFTER in the "Output:" section
+        String output = result.output();
+        int ohNoIndex = output.indexOf("OH NO!");
+        int taskFailedIndex = output.indexOf("Task failed after 1 attempts");
         if (shouldShowRealTimeLogs.equals("true")) {
-            result.assertThat().output().contains("OH NO!");
+            assertThat(ohNoIndex).isLessThan(taskFailedIndex);
         } else {
-            result.assertThat().output().doesNotContain("OH NO!");
+            assertThat(ohNoIndex).isGreaterThan(taskFailedIndex);
         }
 
         String executable = OperatingSystem.get() == OperatingSystem.MACOS ? "/bin/sh" : "sh";
