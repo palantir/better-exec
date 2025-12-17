@@ -1,5 +1,6 @@
 apply plugin: 'com.palantir.gradle-plugin-testing'
 apply plugin: 'java-gradle-plugin'
+apply plugin: 'java-test-fixtures'
 apply plugin: 'com.palantir.external-publish-jar'
 apply plugin: 'groovy'
 
@@ -23,4 +24,11 @@ gradlePlugin {
 gradleTestUtils {
     gradleVersions = ['8.14.3']
     configurationCacheEnabled = true
+}
+
+// Publish to maven local so that tests can directly import BetterExec
+tasks.test.dependsOn tasks.publishToMavenLocal
+
+test {
+    systemProperty 'projectVersion', project.version
 }

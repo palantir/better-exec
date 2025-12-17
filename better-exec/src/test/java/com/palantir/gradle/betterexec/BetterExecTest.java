@@ -29,10 +29,8 @@ import com.palantir.platform.OperatingSystem;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermission;
-import java.util.Properties;
+import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -44,31 +42,29 @@ import org.junit.jupiter.params.provider.ValueSource;
 class BetterExecTest {
 
     @BeforeEach
-    void setup(RootProject rootProject) throws IOException {
+    void setup(RootProject rootProject) {
         rootProject.settingsGradle().rootProjectName("project");
 
-        // Add plugin classes to buildscript classpath so they can be imported
-        Properties props = new Properties();
-        props.load(getClass().getClassLoader().getResourceAsStream("plugin-under-test-metadata.properties"));
-        String classpath = Stream.concat(
-                        Stream.of(props.getProperty("implementation-classpath").split(":")),
-                        Stream.of(getClass()
-                                .getProtectionDomain()
-                                .getCodeSource()
-                                .getLocation()
-                                .getPath()))
-                .map(p -> "'" + p + "'")
-                .collect(Collectors.joining(", "));
+        rootProject
+                .buildGradle()
+                .prepend(
+                        """
+                        buildscript {
+                            repositories {
+                                mavenLocal()
+                                mavenCentral()
+                            }
+                            dependencies {
+                                classpath 'com.palantir.gradle.better-exec:better-exec:%1$s'
+                                // Test fixtures jar contains RetryWhenOutputContainsFailure for testing custom predicates
+                                classpath 'com.palantir.gradle.better-exec:better-exec:%1$s:test-fixtures'
+                            }
+                        }
 
-        rootProject.buildGradle().prepend("""
-            buildscript {
-                dependencies {
-                    classpath files(%s)
-                }
-            }
-
-            import com.palantir.gradle.betterexec.BetterExec
-            """, classpath);
+                        import com.palantir.gradle.betterexec.BetterExec
+                        """,
+                        Optional.ofNullable(System.getProperty("projectVersion"))
+                                .orElseThrow());
 
         rootProject
                 .gradlePropertiesFile()
