@@ -26,9 +26,9 @@ gradleTestUtils {
     configurationCacheEnabled = true
 }
 
-// Publish to maven local so that tests can directly import BetterExec
-tasks.test.dependsOn tasks.publishToMavenLocal
-
-test {
+tasks.named('test', Test) {
     systemProperty 'projectVersion', project.version
+
+    // Publish to maven local so that tests can directly import BetterExec
+    dependsOn tasks.publishToMavenLocal
 }
