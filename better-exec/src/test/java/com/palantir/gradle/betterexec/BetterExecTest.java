@@ -184,7 +184,7 @@ class BetterExecTest {
             Working dir: subdir\
             """.formatted(executable);
 
-        result.assertThat()
+        assertThat(result)
                 .output()
                 .contains("Task failed after 1 attempts with exit code 4.")
                 .contains(
@@ -203,11 +203,11 @@ class BetterExecTest {
 
         InvocationResult result = gradle.withArgs("foo").buildsWithFailure();
 
-        result.assertThat().output().contains("docker: 'test' is not a docker command.");
+        assertThat(result).output().contains("docker: 'test' is not a docker command.");
         if (OperatingSystem.get() == OperatingSystem.MACOS) {
-            result.assertThat().output().contains("Command: [/usr/local/bin/docker, test]");
+            assertThat(result).output().contains("Command: [/usr/local/bin/docker, test]");
         } else {
-            result.assertThat().output().contains("Command: [docker, test]");
+            assertThat(result).output().contains("Command: [docker, test]");
         }
     }
 
@@ -251,7 +251,7 @@ class BetterExecTest {
 
         InvocationResult result = gradle.withArgs("foo").buildsWithFailure();
 
-        result.assertThat().output().contains("Task failed after 4 attempts with exit code 255.");
+        assertThat(result).output().contains("Task failed after 4 attempts with exit code 255.");
     }
 
     @Test
@@ -357,7 +357,7 @@ class BetterExecTest {
 
         InvocationResult result = gradle.withArgs("printOutputs").buildsSuccessfully();
 
-        result.assertThat().output().contains("foo outputs: []");
+        assertThat(result).output().contains("foo outputs: []");
     }
 
     @Test
