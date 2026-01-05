@@ -20,6 +20,7 @@ buildscript {
         classpath 'com.palantir.javaformat:gradle-palantir-java-format:2.83.0'
         classpath 'com.palantir.suppressible-error-prone:gradle-suppressible-error-prone:2.26.0'
         classpath 'com.gradle.publish:plugin-publish-plugin:2.0.0'
+        classpath 'com.palantir.baseline-error-prone:gradle-baseline-error-prone:0.6.0'
         constraints {
             classpath('org.apache.logging.log4j:log4j-core:2.17.1'){ because 'Avoid vulnerable versions of log4j' }
         }
@@ -29,6 +30,7 @@ buildscript {
 apply plugin: 'com.palantir.external-publish'
 apply plugin: 'com.palantir.failure-reports'
 apply plugin: 'com.palantir.baseline'
+apply plugin: 'com.palantir.baseline-error-prone-root'
 apply plugin: 'com.palantir.git-version'
 apply plugin: 'com.palantir.gradle-guide'
 apply plugin: 'com.palantir.idea-language-injector'
