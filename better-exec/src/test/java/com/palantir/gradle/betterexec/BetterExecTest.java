@@ -41,6 +41,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 @DisabledConfigurationCache
 class BetterExecTest {
 
+    @SuppressWarnings("for-rollout:deprecation")
     @BeforeEach
     void setup(RootProject rootProject) {
         rootProject.settingsGradle().rootProjectName("project");
