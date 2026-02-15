@@ -1,6 +1,6 @@
 com.fasterxml.jackson.*:* = 2.21.0
 com.fasterxml.jackson.core:jackson-annotations = 2.21
-org.junit.jupiter:* = 6.0.2
-org.junit.platform:* = 6.0.2
+org.junit.jupiter:* = 6.0.3
+org.junit.platform:* = 6.0.3
 com.palantir.gradle.failure-reports:* =  1.13.0
 com.palantir.gradle.utils:* = 0.23.0
