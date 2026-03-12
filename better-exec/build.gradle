@@ -1,5 +1,6 @@
 apply plugin: 'com.palantir.gradle-plugin-testing'
 apply plugin: 'java-gradle-plugin'
+apply plugin: 'java-test-fixtures'
 apply plugin: 'com.palantir.external-publish-jar'
 apply plugin: 'groovy'
 
@@ -12,7 +13,6 @@ dependencies {
     api 'com.palantir.gradle.utils:environment-variables'
 
     testImplementation gradleApi()
-    testImplementation 'com.netflix.nebula:nebula-test'
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
 
@@ -22,5 +22,12 @@ gradlePlugin {
 }
 
 gradleTestUtils {
-    gradleVersions = ['8.14.3']
+    configurationCacheEnabled = true
+}
+
+tasks.named('test', Test) {
+    systemProperty 'projectVersion', project.version
+
+    // Publish to maven local so that tests can directly import BetterExec
+    dependsOn tasks.publishToMavenLocal
 }

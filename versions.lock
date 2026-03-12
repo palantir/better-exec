@@ -1,12 +1,12 @@
 # Run ./gradlew writeVersionsLocks to regenerate this file. Blank lines are to minimize merge conflicts.
 
-com.fasterxml.jackson.core:jackson-annotations:2.19.2 (3 constraints: 3739a7c3)
+com.fasterxml.jackson.core:jackson-annotations:2.21 (4 constraints: da3c34c2)
 
-com.fasterxml.jackson.core:jackson-core:2.19.2 (2 constraints: ff291615)
+com.fasterxml.jackson.core:jackson-core:2.21.1 (2 constraints: ef29e412)
 
-com.fasterxml.jackson.core:jackson-databind:2.19.2 (1 constraints: 7217b53d)
+com.fasterxml.jackson.core:jackson-databind:2.21.1 (1 constraints: 6a17a03d)
 
-com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.19.2 (1 constraints: 3a1b2047)
+com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.21.1 (1 constraints: 3a1b2047)
 
 com.fasterxml.woodstox:woodstox-core:7.1.1 (1 constraints: 3d174926)
 
@@ -14,7 +14,7 @@ com.google.errorprone:error_prone_annotations:2.41.0 (1 constraints: 490a3ebf)
 
 com.google.guava:failureaccess:1.0.3 (1 constraints: 160ae3b4)
 
-com.google.guava:guava:33.5.0-jre (2 constraints: d0349ca2)
+com.google.guava:guava:33.5.0-jre (3 constraints: 17503d75)
 
 com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava (1 constraints: bd17c918)
 
@@ -24,15 +24,15 @@ com.palantir.gradle.failure-reports:gradle-failure-reports-common:1.13.0 (1 cons
 
 com.palantir.gradle.failure-reports:gradle-failure-reports-exceptions:1.13.0 (1 constraints: 3705323b)
 
-com.palantir.gradle.utils:circleci-artifacts:0.19.0 (1 constraints: 3c053e3b)
+com.palantir.gradle.utils:circleci-artifacts:0.23.0 (1 constraints: 3705303b)
 
-com.palantir.gradle.utils:environment-variables:0.19.0 (2 constraints: 3718378a)
+com.palantir.gradle.utils:environment-variables:0.23.0 (2 constraints: 2d180d89)
 
-com.palantir.gradle.utils:exec:0.19.0 (1 constraints: 350f7276)
+com.palantir.gradle.utils:exec:0.23.0 (1 constraints: 300f6476)
 
-com.palantir.gradle.utils:platform:0.19.0 (1 constraints: 3c053e3b)
+com.palantir.gradle.utils:platform:0.23.0 (1 constraints: 3705303b)
 
-com.palantir.gradle.utils:providers:0.19.0 (2 constraints: 7020c85d)
+com.palantir.gradle.utils:providers:0.23.0 (2 constraints: 6620e45c)
 
 org.codehaus.woodstox:stax2-api:4.2.2 (2 constraints: 6a278bd2)
 
@@ -44,35 +44,49 @@ org.jspecify:jspecify:1.0.0 (7 constraints: 5370d26f)
 
 cglib:cglib-nodep:3.2.2 (1 constraints: 490ded24)
 
-com.netflix.nebula:nebula-test:10.6.2 (2 constraints: d61de72d)
+com.netflix.nebula:nebula-test:10.6.2 (1 constraints: 9c18268f)
 
-com.palantir.gradle.plugintesting:configuration-cache-spec:0.12.0 (1 constraints: 3505293b)
+com.palantir.gradle.plugintesting:configuration-cache-spec:0.62.0 (1 constraints: 3a053d3b)
 
-com.palantir.gradle.plugintesting:plugin-testing-core:0.12.0 (1 constraints: 3505293b)
+com.palantir.gradle.plugintesting:discover-tests-cli:0.62.0 (1 constraints: 3a053d3b)
+
+com.palantir.gradle.plugintesting:gradle-plugin-testing-junit:0.62.0 (1 constraints: 3a053d3b)
+
+com.palantir.gradle.plugintesting:plugin-testing-core:0.62.0 (1 constraints: 3a053d3b)
+
+commons-io:commons-io:2.19.0 (1 constraints: db190cdf)
+
+info.picocli:picocli:4.7.7 (1 constraints: 2816dcdd)
 
 junit:junit:4.13.2 (1 constraints: 1b0e1d4c)
 
+net.bytebuddy:byte-buddy:1.15.11 (1 constraints: 7f0bc9ea)
+
 org.apiguardian:apiguardian-api:1.1.2 (6 constraints: 5366ce6e)
 
-org.codehaus.groovy:groovy:3.0.25 (3 constraints: 14347add)
+org.assertj:assertj-core:3.27.3 (1 constraints: de1913df)
+
+org.codehaus.groovy:groovy:3.0.24 (3 constraints: 133429dd)
 
 org.hamcrest:hamcrest:2.2 (1 constraints: d20cdc04)
 
 org.hamcrest:hamcrest-core:1.3 (1 constraints: cc05fe3f)
 
-org.junit.jupiter:junit-jupiter:6.0.0 (1 constraints: 47070770)
+org.jetbrains:annotations:26.1.0 (1 constraints: d81910df)
 
-org.junit.jupiter:junit-jupiter-api:6.0.0 (4 constraints: e2455a9a)
+org.junit.jupiter:junit-jupiter:6.0.3 (1 constraints: 4a070d70)
 
-org.junit.jupiter:junit-jupiter-engine:6.0.0 (1 constraints: 030eca3b)
+org.junit.jupiter:junit-jupiter-api:6.0.3 (5 constraints: fd5f6b95)
 
-org.junit.jupiter:junit-jupiter-params:6.0.0 (2 constraints: 8a24c8b7)
+org.junit.jupiter:junit-jupiter-engine:6.0.3 (1 constraints: 060ecd3b)
 
-org.junit.platform:junit-platform-commons:6.0.0 (2 constraints: d320144a)
+org.junit.jupiter:junit-jupiter-params:6.0.3 (2 constraints: c42428d7)
 
-org.junit.platform:junit-platform-engine:6.0.0 (3 constraints: 2030ca55)
+org.junit.platform:junit-platform-commons:6.0.3 (2 constraints: d920ad4a)
 
-org.junit.platform:junit-platform-launcher:6.0.0 (1 constraints: 08050936)
+org.junit.platform:junit-platform-engine:6.0.3 (3 constraints: 26304d57)
+
+org.junit.platform:junit-platform-launcher:6.0.3 (2 constraints: 591ba162)
 
 org.objenesis:objenesis:2.4 (1 constraints: ea0c8c0a)
 
