@@ -30,6 +30,8 @@ import org.gradle.api.provider.Provider;
  * directly reference implementation types like {@link ArtifactLocation}, {@link CircleCiArtifacts}, or
  * {@link EnvironmentVariables}. This allows those dependencies to be {@code implementation} rather than {@code api},
  * since {@code validatePlugins} can load {@link BetterExec} without needing those types on the compile classpath.
+ *
+ * @see <a href="https://github.com/gradle/gradle/issues/37091">gradle/gradle#37091</a>
  */
 final class BetterExecInternals {
 
