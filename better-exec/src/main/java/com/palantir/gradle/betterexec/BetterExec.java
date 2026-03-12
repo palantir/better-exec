@@ -15,10 +15,10 @@
  */
 package com.palantir.gradle.betterexec;
 
+import com.google.errorprone.annotations.RestrictedApi;
 import groovy.lang.Closure;
 import javax.inject.Inject;
 import org.gradle.api.DefaultTask;
-import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.workers.WorkQueue;
 import org.gradle.workers.WorkerExecutor;
@@ -29,13 +29,15 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
     private final BetterExecInternals internals;
 
     @Inject
-    protected abstract WorkerExecutor getWorkerExecutor();
-
-    @Inject
-    protected abstract ObjectFactory getObjectFactory();
+    @RestrictedApi(
+            explanation = "Do not use — internal to BetterExec",
+            link = "",
+            allowedOnPath = ".*/com/palantir/gradle/betterexec/.*")
+    protected abstract WorkerExecutor getBetterExecInternalWorkerExecutor();
 
     public BetterExec() {
-        internals = new BetterExecInternals(getObjectFactory(), getProject().getName() + "." + getName());
+        internals =
+                new BetterExecInternals(getProject().getObjects(), getProject().getName() + "." + getName());
 
         getWorkingDir().set(".");
 
@@ -48,7 +50,7 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
 
     @TaskAction
     public final void exec() {
-        WorkQueue workQueue = getWorkerExecutor().noIsolation();
+        WorkQueue workQueue = getBetterExecInternalWorkerExecutor().noIsolation();
 
         workQueue.submit(BetterExecAction.class, params -> {
             params.getCommand().set(getCommand());

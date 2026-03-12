@@ -35,7 +35,6 @@ final class BetterExecInternals {
 
     private final CircleCiArtifacts circleCiArtifacts;
     private final EnvironmentVariables environmentVariables;
-
     private final Property<ArtifactLocation> artifactLocation;
 
     BetterExecInternals(ObjectFactory objectFactory, String baseName) {
