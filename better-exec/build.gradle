@@ -9,6 +9,7 @@ dependencies {
 
     implementation 'com.palantir.gradle.failure-reports:gradle-failure-reports-exceptions'
     implementation 'com.palantir.gradle.utils:platform'
+    // api because BetterExec exposes these types via @Nested, so validatePlugins needs them on the compileClasspath
     api 'com.palantir.gradle.utils:circleci-artifacts'
     api 'com.palantir.gradle.utils:environment-variables'
 
