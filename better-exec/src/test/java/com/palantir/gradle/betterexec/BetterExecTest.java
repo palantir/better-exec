@@ -69,16 +69,16 @@ class BetterExecTest {
 
         rootProject
                 .gradlePropertiesFile()
-                .appendProperty("__TESTING", "true")
-                .appendProperty("__TESTING_CI", "true")
-                .appendProperty("__TESTING_CIRCLE_ARTIFACTS", rootProject.path() + "/circle-artifacts")
-                .appendProperty("__TESTING_CIRCLE_HOME_DIRECTORY", rootProject.path() + "/")
-                .appendProperty("__TESTING_CIRCLE_WORKFLOW_JOB_ID", "de700126-0f58-4624-aed3-1cdd297ed785")
-                .appendProperty("__TESTING_CIRCLE_NODE_INDEX", "2")
-                .appendProperty("__TESTING_CIRCLE_BUILD_URL", "https://mycircle.url/gh/palantir/better-exec/1581")
-                .appendProperty("__TESTING_CIRCLE_PROJECT_USERNAME", "foo")
-                .appendProperty("__TESTING_CIRCLE_PROJECT_REPONAME", "bar")
-                .appendProperty("__TESTING_CIRCLE_BUILD_NUM", "1");
+                .setProperty("__TESTING", "true")
+                .setProperty("__TESTING_CI", "true")
+                .setProperty("__TESTING_CIRCLE_ARTIFACTS", rootProject.path() + "/circle-artifacts")
+                .setProperty("__TESTING_CIRCLE_HOME_DIRECTORY", rootProject.path() + "/")
+                .setProperty("__TESTING_CIRCLE_WORKFLOW_JOB_ID", "de700126-0f58-4624-aed3-1cdd297ed785")
+                .setProperty("__TESTING_CIRCLE_NODE_INDEX", "2")
+                .setProperty("__TESTING_CIRCLE_BUILD_URL", "https://mycircle.url/gh/palantir/better-exec/1581")
+                .setProperty("__TESTING_CIRCLE_PROJECT_USERNAME", "foo")
+                .setProperty("__TESTING_CIRCLE_PROJECT_REPONAME", "bar")
+                .setProperty("__TESTING_CIRCLE_BUILD_NUM", "1");
     }
 
     ArbitraryFile circleArtifactsLog(RootProject rootProject, String taskName) {
