@@ -23,10 +23,10 @@ import java.util.stream.IntStream;
 import javax.inject.Inject;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.RegularFile;
-import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Internal;
+import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.workers.WorkQueue;
 import org.gradle.workers.WorkerExecutor;
@@ -38,21 +38,25 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
     @Inject
     protected abstract WorkerExecutor getWorkerExecutor();
 
-    @Internal
-    protected abstract Property<String> getCircleLink();
+    @Nested
+    protected abstract CircleCiArtifacts getCircleCiArtifacts();
 
-    @Inject
-    protected abstract ObjectFactory getObjectFactory();
+    @Nested
+    protected abstract EnvironmentVariables getEnvVarsFromUtils();
+
+    @Internal
+    protected abstract Property<ArtifactLocation> getArtifactLocation();
 
     public BetterExec() {
-        Provider<ArtifactLocation> location = findAvailableLocation(getProject().getName() + "." + getName());
-
-        getCircleLink().set(location.map(ArtifactLocation::circleLink).orElse(""));
+        getArtifactLocation().set(findAvailableLocation(getProject().getName() + "." + getName()));
+        getArtifactLocation().finalizeValueOnRead();
 
         getWorkingDir().set(".");
 
         getCircleLogFilePath()
-                .fileProvider(location.map(ArtifactLocation::physicalPath).map(RegularFile::getAsFile));
+                .fileProvider(getArtifactLocation()
+                        .map(ArtifactLocation::physicalPath)
+                        .map(RegularFile::getAsFile));
 
         getShowRealTimeLogs().set(isOnCi().map(isOnCi -> !isOnCi));
         getCheckExitStatus().set(true);
@@ -77,7 +81,8 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
 
             params.getRetryWhen().set(retryWhen);
             params.getIsOnCi().set(isOnCi());
-            params.getCircleArtifactsUrlLocation().set(getCircleLink());
+            params.getCircleArtifactsUrlLocation()
+                    .set(getArtifactLocation().map(ArtifactLocation::circleLink).orElse(""));
         });
     }
 
@@ -104,17 +109,14 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
     }
 
     private Provider<Boolean> isOnCi() {
-        return getObjectFactory()
-                .newInstance(EnvironmentVariables.class)
+        return getEnvVarsFromUtils()
                 .envVarOrFromTestingProperty("CI")
                 .map(_value -> true)
                 .orElse(false);
     }
 
     private Provider<ArtifactLocation> findAvailableLocation(String baseName) {
-        CircleCiArtifacts artifacts = getObjectFactory().newInstance(CircleCiArtifacts.class);
-
-        return artifacts.resolveArtifactLocation(baseName + ".log").map(location -> {
+        return getCircleCiArtifacts().resolveArtifactLocation(baseName + ".log").map(location -> {
             if (!location.physicalPath().getAsFile().exists()) {
                 return location;
             }
@@ -122,7 +124,9 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
             return IntStream.iterate(2, i -> i + 1)
                     .mapToObj(i -> {
                         String fileName = baseName + "." + i + ".log";
-                        return artifacts.resolveArtifactLocation(fileName).get();
+                        return getCircleCiArtifacts()
+                                .resolveArtifactLocation(fileName)
+                                .get();
                     })
                     .filter(loc -> !loc.physicalPath().getAsFile().exists())
                     .findFirst()
