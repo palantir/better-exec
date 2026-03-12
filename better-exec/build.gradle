@@ -6,7 +6,7 @@ apply plugin: 'groovy'
 
 dependencies {
     compileOnly gradleApi()
-    compileOnly 'com.google.errorprone:error_prone_annotations'
+    compileOnlyApi 'com.google.errorprone:error_prone_annotations'
 
     implementation 'com.palantir.gradle.failure-reports:gradle-failure-reports-exceptions'
     implementation 'com.palantir.gradle.utils:platform'
