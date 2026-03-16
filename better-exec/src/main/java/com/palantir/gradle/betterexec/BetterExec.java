@@ -31,7 +31,6 @@ public abstract class BetterExec extends DefaultTask implements BetterExecCommon
     @Inject
     @RestrictedApi(
             explanation = "Do not use — internal to BetterExec",
-            link = "",
             allowedOnPath = ".*/com/palantir/gradle/betterexec/.*")
     protected abstract WorkerExecutor getBetterExecInternalWorkerExecutor();
 
