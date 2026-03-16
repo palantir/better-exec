@@ -53,10 +53,7 @@ final class BetterExecInternals {
     }
 
     Provider<Boolean> isOnCi() {
-        return environmentVariables
-                .envVarOrFromTestingProperty("CI")
-                .map(_value -> true)
-                .orElse(false);
+        return environmentVariables.isCi();
     }
 
     Provider<String> circleArtifactsUrl() {
