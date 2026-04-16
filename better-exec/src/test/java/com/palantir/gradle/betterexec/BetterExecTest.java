@@ -22,7 +22,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.palantir.gradle.testing.execution.GradleInvoker;
 import com.palantir.gradle.testing.execution.InvocationResult;
 import com.palantir.gradle.testing.files.arbitrary.ArbitraryFile;
-import com.palantir.gradle.testing.junit.DisabledConfigurationCache;
 import com.palantir.gradle.testing.junit.GradlePluginTests;
 import com.palantir.gradle.testing.project.RootProject;
 import com.palantir.platform.OperatingSystem;
@@ -38,7 +37,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 @GradlePluginTests
-@DisabledConfigurationCache
 class BetterExecTest {
 
     @SuppressWarnings("for-rollout:deprecation")
