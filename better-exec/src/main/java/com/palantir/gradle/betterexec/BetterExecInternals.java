@@ -35,16 +35,15 @@ import org.gradle.api.provider.Provider;
  */
 final class BetterExecInternals {
 
-    private final CircleCiArtifacts circleCiArtifacts;
     private final EnvironmentVariables environmentVariables;
     private final Property<ArtifactLocation> artifactLocation;
 
     BetterExecInternals(ObjectFactory objectFactory, String baseName) {
-        circleCiArtifacts = objectFactory.newInstance(CircleCiArtifacts.class);
+        CircleCiArtifacts circleCiArtifacts = objectFactory.newInstance(CircleCiArtifacts.class);
         environmentVariables = objectFactory.newInstance(EnvironmentVariables.class);
         artifactLocation = objectFactory.property(ArtifactLocation.class);
 
-        artifactLocation.set(findAvailableLocation(baseName));
+        artifactLocation.set(findAvailableLocation(circleCiArtifacts, baseName));
         artifactLocation.finalizeValueOnRead();
     }
 
@@ -60,7 +59,8 @@ final class BetterExecInternals {
         return artifactLocation.map(ArtifactLocation::circleLink).orElse("");
     }
 
-    private Provider<ArtifactLocation> findAvailableLocation(String baseName) {
+    private static Provider<ArtifactLocation> findAvailableLocation(
+            CircleCiArtifacts circleCiArtifacts, String baseName) {
         return circleCiArtifacts.resolveArtifactLocation(baseName + ".log").map(location -> {
             if (!location.physicalPath().getAsFile().exists()) {
                 return location;
