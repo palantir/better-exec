@@ -20,9 +20,11 @@ import groovy.lang.Closure;
 import javax.inject.Inject;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.work.DisableCachingByDefault;
 import org.gradle.workers.WorkQueue;
 import org.gradle.workers.WorkerExecutor;
 
+@DisableCachingByDefault(because = "Not opting into build caching; explicit opt-out is required by Gradle 9.7")
 public abstract class BetterExec extends DefaultTask implements BetterExecCommon {
 
     private final SerializableOrSpec<String> retryWhen = SerializableOrSpec.empty();
